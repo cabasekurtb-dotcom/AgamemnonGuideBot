@@ -1,4 +1,4 @@
-# python_faq_chatbot_v2_fixed_form.py
+# python_faq_chatbot_v3.py
 import streamlit as st
 import random
 import difflib
@@ -8,7 +8,7 @@ st.title("🤖 Agamemnon — Python Tutor & FAQ")
 st.write("Ask me about Python, request a challenge, or say something casual. (Try: 'Give me a challenge', 'What is a list?', 'Tell me something cool about Python')")
 
 # -----------------------
-# Helper data: FAQ, facts, challenges, casuals
+# Helper data
 # -----------------------
 faq = {
     "what is python": "Python is a high-level, interpreted programming language known for readability and versatility. It's used in web development, data science, automation, and more.",
@@ -43,20 +43,20 @@ challenges = [
 ]
 
 casual_responses = {
-    "casey" : ["Ikaw na, Casey?"],
-    "nino" : ["Sig panghilabot dira dong"],
-    "20th_century_girl" : ["Best movie oat, 10/10 must watch."],
-    "bai" : ["Saman dong/dae"],
-    "i miss her" : ["Di na lage mo magbalik Corbin"],
-    "unsa paman" : ["Wa nako kaibaw dong."],
-    "at sa bawat minuto" : ["Ako'y di natuto"],
-    "ipilit mang iba" : ["Ako'y naghihintay sa'yo"],
-    "10-fjk" : ["THE GOATTT", "10-FJK>Others"],
-    "izak" : ["Ayaw ana Izak, bawal!"],
-    "loberanis" : ["Hi ms.! Ako imong 43rd student ms.", "Gimingaw kog f2f ms...."],
-    "abadenas" : ["Hi sir, pila akong grado sir? -Cabase"],
-    "sir d" : ["Hi sir plus points pls -Cabs"],
-    "creator" : ["ANG PINAKAGWAPO SA ROOM, SI KURT CABASE!!"],
+    "casey": ["Ikaw na, Casey?"],
+    "nino": ["Sig panghilabot dira dong"],
+    "20th_century_girl": ["Best movie oat, 10/10 must watch."],
+    "bai": ["Saman dong/dae"],
+    "i miss her": ["Di na lage mo magbalik Corbin"],
+    "unsa paman": ["Wa nako kaibaw dong."],
+    "at sa bawat minuto": ["Ako'y di natuto"],
+    "ipilit mang iba": ["Ako'y naghihintay sa'yo"],
+    "10-fjk": ["THE GOATTT", "10-FJK>Others"],
+    "izak": ["Ayaw ana Izak, bawal!"],
+    "loberanis": ["Hi ms.! Ako imong 43rd student ms.", "Gimingaw kog f2f ms...."],
+    "abadenas": ["Hi sir, pila akong grado sir? -Cabase"],
+    "sir d": ["Hi sir plus points pls -Cabs"],
+    "creator": ["ANG PINAKAGWAPO SA ROOM, SI KURT CABASE!!"],
     "greeting": ["Hey! What's up?", "Hello! How can I help you with Python today?", "Yo! Ready to code?"],
     "how_are_you": ["I'm a bot, but I'm running smoothly 😊", "All systems go! Ready to help."],
     "thanks": ["You're welcome!", "No problem — happy to help!", "Anytime!"],
@@ -107,7 +107,7 @@ def small_talk_response(message: str):
     return None
 
 # -----------------------
-# Streamlit chat system (form version)
+# Streamlit chat system
 # -----------------------
 if "history" not in st.session_state:
     st.session_state.history = []
@@ -140,14 +140,14 @@ if submitted and user_input.strip():
     if response is None and any(k in normalize(msg) for k in ["who made python", "who created python", "creator of python", "who created it"]):
         response = faq.get("who created python")
 
-    # 4.5) Check for direct matches in casual_responses
+    # 5) casual_responses match
     if response is None:
         for key, value in casual_responses.items():
             if key.lower() in normalize(msg):
                 response = random.choice(value)
                 break
 
-    # 5) personality prompts
+    # 6) personality / fallback
     if response is None:
         n = normalize(msg)
         if "casey" in n:
@@ -171,16 +171,16 @@ if submitted and user_input.strip():
 
     # Save messages
     st.session_state.history.append(("You", msg))
-    st.session_state.history.append(("Agamemnon", response))
+    st.session_state.history.append(("🤖 Agamemnon", response))
 
 # Display chat history
 for speaker, text in st.session_state.history:
     if speaker == "You":
         st.markdown(f"**🧑 You:** {text}")
     else:
-        st.markdown(f"**🤖 Agamemnon:** {text}")
+        st.markdown(f"**{speaker}:** {text}")
 
-# Add clear chat button
+# Clear chat button
 if st.button("🧹 Clear Chat"):
     st.session_state.history.clear()
     st.experimental_rerun()
