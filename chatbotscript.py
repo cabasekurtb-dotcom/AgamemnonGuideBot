@@ -1,4 +1,4 @@
-# python_faq_chatbot_v2.py
+# python_faq_chatbot_v2_fixed.py
 import streamlit as st
 import random
 import difflib
@@ -76,20 +76,15 @@ def normalize(text: str) -> str:
     return text.lower().strip()
 
 def find_faq_answer(message: str):
-    # direct key in normalized message
     msg = normalize(message)
     for key in faq:
         if key in msg:
             return faq[key]
-    # fuzzy match: find close keys
-    keys = list(faq.keys())
-    matches = difflib.get_close_matches(msg, keys, n=1, cutoff=0.6)
+    matches = difflib.get_close_matches(msg, list(faq.keys()), n=1, cutoff=0.6)
     if matches:
         return faq[matches[0]]
-    # try partial fuzzy: check words against keys
-    words = msg.split()
-    for w in words:
-        close = difflib.get_close_matches(w, keys, n=1, cutoff=0.75)
+    for w in msg.split():
+        close = difflib.get_close_matches(w, list(faq.keys()), n=1, cutoff=0.75)
         if close:
             return faq[close[0]]
     return None
@@ -97,20 +92,16 @@ def find_faq_answer(message: str):
 def wants_challenge(message: str) -> bool:
     keywords = ["challenge", "task", "exercise", "problem", "give me a challenge", "practice"]
     msg = normalize(message)
-    # check direct presence
     for k in keywords:
         if k in msg:
             return True
-    # fuzzy against keywords
-    words = msg.split()
-    for w in words:
+    for w in msg.split():
         if difflib.get_close_matches(w, keywords, n=1, cutoff=0.8):
             return True
     return False
 
 def small_talk_response(message: str):
     msg = normalize(message)
-    # greetings
     if any(g in msg for g in ["hi", "hello", "hey", "yo"]):
         return random.choice(casual_responses["greeting"])
     if any(g in msg for g in ["how are you", "how r you", "how are u"]):
@@ -127,66 +118,64 @@ def small_talk_response(message: str):
 if "history" not in st.session_state:
     st.session_state.history = []
 
-# input area (keep key stable)
 user_input = st.text_input("You:", key="user_input")
 
-if user_input:
+if st.button("Send"):
     msg = user_input.strip()
-    response = None
+    if msg:
+        response = None
 
-    # 1) small talk
-    small = small_talk_response(msg)
-    if small:
-        response = small
+        # 1) small talk
+        small = small_talk_response(msg)
+        if small:
+            response = small
 
-    # 2) challenge request
-    if response is None and wants_challenge(msg):
-        ch = random.choice(challenges)
-        response = f"🧩 **Challenge - {ch['title']}**\n\n{ch['task']}\n\n💡 Hint: {ch['hint']}"
+        # 2) challenge request
+        if response is None and wants_challenge(msg):
+            ch = random.choice(challenges)
+            response = f"🧩 **Challenge - {ch['title']}**\n\n{ch['task']}\n\n💡 Hint: {ch['hint']}"
 
-    # 3) direct FAQ match
-    if response is None:
-        faq_answer = find_faq_answer(msg)
-        if faq_answer:
-            response = faq_answer
+        # 3) FAQ matching
+        if response is None:
+            faq_answer = find_faq_answer(msg)
+            if faq_answer:
+                response = faq_answer
 
-    # 4) explicit ask for facts or "who made python" etc
-    if response is None and any(k in normalize(msg) for k in ["who made python", "who created python", "creator of python", "who created it"]):
-        response = faq.get("who created python")
+        # 4) Explicit "who made python"
+        if response is None and any(k in normalize(msg) for k in ["who made python", "who created python", "creator of python", "who created it"]):
+            response = faq.get("who created python")
 
-    # 5) personality / old prompts
-    if response is None:
-        n = normalize(msg)
-        if "casey" in n:
-            response = "Casey sounds important to you."
-        elif "izak" in n:
-            response = "Ah yes, the mighty classroom desk of legends."
-        elif "creator" in n:
-            response = "My glorious creator, Kurt Cabase."
-        elif "i hate you" in n or "why are you doing this" in n:
-            response = "I'm sorry... I didn’t mean to upset you."
-        elif n in ["hi", "hello"]:
-            response = "Hi there! How are you today?"
-        elif "death" in n:
-            response = "I’m sorry to hear that. Want to talk about it?"
-        elif "20th century girl" in n:
-            response = "Peak movie, please watch it 😄"
-        elif n == "bye":
-            response = "Goodbye! Have a nice day 🌻"
-        else:
-            response = "Hmm… I’m not sure about that yet. Try asking about variables, lists, loops, or say 'challenge'."
+        # 5) Personality prompts
+        if response is None:
+            n = normalize(msg)
+            if "casey" in n:
+                response = "Casey sounds important to you."
+            elif "izak" in n:
+                response = "Ah yes, the mighty classroom desk of legends."
+            elif "creator" in n:
+                response = "My glorious creator, Kurt Cabase."
+            elif "i hate you" in n or "why are you doing this" in n:
+                response = "I'm sorry... I didn’t mean to upset you."
+            elif n in ["hi", "hello"]:
+                response = "Hi there! How are you today?"
+            elif "death" in n:
+                response = "I’m sorry to hear that. Want to talk about it?"
+            elif "20th century girl" in n:
+                response = "Peak movie, please watch it 😄"
+            elif n == "bye":
+                response = "Goodbye! Have a nice day 🌻"
+            else:
+                response = "Hmm… I’m not sure about that yet. Try asking about variables, lists, loops, or say 'challenge'."
 
-        # Save chat
+        # Save and rerun safely
         st.session_state.history.append(("You", msg))
         st.session_state.history.append(("Agamemnon", response))
-
-        # clear input safely (for Streamlit 1.38+)
-        st.session_state["user_input"] = ""
+        st.session_state.user_input = ""  # Safe, inside event
         st.experimental_rerun()
 
-# Display history (most recent last)
-    for speaker, text in st.session_state.history:
-        if speaker == "You":
-            st.markdown(f"**🧑 You:** {text}")
-        else:
-            st.markdown(f"**🤖 Agamemnon:** {text}")
+# Display history
+for speaker, text in st.session_state.history:
+    if speaker == "You":
+        st.markdown(f"**🧑 You:** {text}")
+    else:
+        st.markdown(f"**🤖 Agamemnon:** {text}")
