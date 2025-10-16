@@ -179,18 +179,17 @@ if user_input:
     if response is None:
         response = "Hmm… I’m not sure about that yet. Try asking about variables, lists, loops, or say 'challenge'."
 
-    # Save chat
-    st.session_state.history.append(("You", msg))
-    st.session_state.history.append(("Agamemnon", response))
+        # Save chat
+        st.session_state.history.append(("You", msg))
+        st.session_state.history.append(("Agamemnon", response))
 
-    # clear input safely (works in all versions)
-    st.session_state["user_input"] = ""
-    st.experimental_rerun()
+        # clear input safely (for Streamlit 1.38+)
+        st.session_state["user_input"] = ""
+        st.experimental_rerun()
 
-# Display history (most recent last)
-for speaker, text in st.session_state.history:
-    if speaker == "You":
-        st.markdown(f"**🧑 You:** {text}")
-    else:
-        # render markdown for challenge/hints/newlines
-        st.markdown(f"**🤖 Agamemnon:** {text}")
+    # Display history (most recent last)
+    for speaker, text in st.session_state.history:
+        if speaker == "You":
+            st.markdown(f"**🧑 You:** {text}")
+        else:
+            st.markdown(f"**🤖 Agamemnon:** {text}")
