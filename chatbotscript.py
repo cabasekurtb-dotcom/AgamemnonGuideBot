@@ -1,4 +1,4 @@
-# python_faq_chatbot_v2_fixed.py
+# python_faq_chatbot_v2_fixed_form.py
 import streamlit as st
 import random
 import difflib
@@ -20,7 +20,7 @@ faq = {
     "what is a dictionary": "A dictionary stores key:value pairs. Example: `p = {'name':'Isko','age':15}`.",
     "what is boolean": "Boolean values are `True` or `False`, used for logic and conditions.",
     "what is a loop": "A loop repeats code. Example: `for i in range(3): print(i)`.",
-    "what is if else": "`if/elif/else` let your program choose different actions based on conditions.",
+    "what is if else": "`if/elif/else` lets your program choose actions based on conditions.",
     "what is a function": "A function is a reusable block of code. Example:\n```python\ndef greet():\n    print('Hi')\n```",
     "what is pip": "pip is Python's package manager, used to install libraries like Streamlit or numpy.",
     "what is indentation": "Indentation (spaces) defines code blocks in Python — it's required for correctness.",
@@ -35,31 +35,11 @@ fun_facts = [
 ]
 
 challenges = [
-    {
-        "title": "Sum of Two Numbers",
-        "task": "Ask the user for two numbers and print their sum.",
-        "hint": "Use `input()` and convert to int: `int(input())`."
-    },
-    {
-        "title": "Even or Odd",
-        "task": "Read a number and print whether it's even or odd.",
-        "hint": "Use `% 2` to check remainder."
-    },
-    {
-        "title": "Reverse a String",
-        "task": "Ask for a string and print it reversed.",
-        "hint": "Use `s[::-1]` slicing."
-    },
-    {
-        "title": "List Average",
-        "task": "Given a list of numbers, compute their average.",
-        "hint": "Use `sum(list) / len(list)`."
-    },
-    {
-        "title": "Simple Counter Function",
-        "task": "Write a function that counts how many times a specific item appears in a list.",
-        "hint": "Loop through the list and increment a counter when you find a match."
-    },
+    {"title": "Sum of Two Numbers", "task": "Ask the user for two numbers and print their sum.", "hint": "Use `input()` and convert to int: `int(input())`."},
+    {"title": "Even or Odd", "task": "Read a number and print whether it's even or odd.", "hint": "Use `% 2` to check remainder."},
+    {"title": "Reverse a String", "task": "Ask for a string and print it reversed.", "hint": "Use `s[::-1]` slicing."},
+    {"title": "List Average", "task": "Given a list of numbers, compute their average.", "hint": "Use `sum(list) / len(list)`."},
+    {"title": "Simple Counter Function", "task": "Write a function that counts how many times a specific item appears in a list.", "hint": "Loop through the list and increment a counter."},
 ]
 
 casual_responses = {
@@ -70,7 +50,7 @@ casual_responses = {
 }
 
 # -----------------------
-# Matching helpers (lightweight)
+# Matching helpers
 # -----------------------
 def normalize(text: str) -> str:
     return text.lower().strip()
@@ -113,69 +93,73 @@ def small_talk_response(message: str):
     return None
 
 # -----------------------
-# Streamlit UI + session state
+# Streamlit chat system (form version)
 # -----------------------
 if "history" not in st.session_state:
     st.session_state.history = []
 
-user_input = st.text_input("You:", key="user_input")
+with st.form("chat_form", clear_on_submit=True):
+    user_input = st.text_input("You:")
+    submitted = st.form_submit_button("Send")
 
-if st.button("Send"):
+if submitted and user_input.strip():
     msg = user_input.strip()
-    if msg:
-        response = None
+    response = None
 
-        # 1) small talk
-        small = small_talk_response(msg)
-        if small:
-            response = small
+    # 1) small talk
+    small = small_talk_response(msg)
+    if small:
+        response = small
 
-        # 2) challenge request
-        if response is None and wants_challenge(msg):
-            ch = random.choice(challenges)
-            response = f"🧩 **Challenge - {ch['title']}**\n\n{ch['task']}\n\n💡 Hint: {ch['hint']}"
+    # 2) challenge
+    if response is None and wants_challenge(msg):
+        ch = random.choice(challenges)
+        response = f"🧩 **Challenge - {ch['title']}**\n\n{ch['task']}\n\n💡 Hint: {ch['hint']}"
 
-        # 3) FAQ matching
-        if response is None:
-            faq_answer = find_faq_answer(msg)
-            if faq_answer:
-                response = faq_answer
+    # 3) FAQ
+    if response is None:
+        faq_answer = find_faq_answer(msg)
+        if faq_answer:
+            response = faq_answer
 
-        # 4) Explicit "who made python"
-        if response is None and any(k in normalize(msg) for k in ["who made python", "who created python", "creator of python", "who created it"]):
-            response = faq.get("who created python")
+    # 4) explicit creator ask
+    if response is None and any(k in normalize(msg) for k in ["who made python", "who created python", "creator of python", "who created it"]):
+        response = faq.get("who created python")
 
-        # 5) Personality prompts
-        if response is None:
-            n = normalize(msg)
-            if "casey" in n:
-                response = "Casey sounds important to you."
-            elif "izak" in n:
-                response = "Ah yes, the mighty classroom desk of legends."
-            elif "creator" in n:
-                response = "My glorious creator, Kurt Cabase."
-            elif "i hate you" in n or "why are you doing this" in n:
-                response = "I'm sorry... I didn’t mean to upset you."
-            elif n in ["hi", "hello"]:
-                response = "Hi there! How are you today?"
-            elif "death" in n:
-                response = "I’m sorry to hear that. Want to talk about it?"
-            elif "20th century girl" in n:
-                response = "Peak movie, please watch it 😄"
-            elif n == "bye":
-                response = "Goodbye! Have a nice day 🌻"
-            else:
-                response = "Hmm… I’m not sure about that yet. Try asking about variables, lists, loops, or say 'challenge'."
+    # 5) personality prompts
+    if response is None:
+        n = normalize(msg)
+        if "casey" in n:
+            response = "Casey sounds important to you."
+        elif "izak" in n:
+            response = "Ah yes, the mighty classroom desk of legends."
+        elif "creator" in n:
+            response = "My glorious creator, Kurt Cabase."
+        elif "i hate you" in n or "why are you doing this" in n:
+            response = "I'm sorry... I didn’t mean to upset you."
+        elif n in ["hi", "hello"]:
+            response = "Hi there! How are you today?"
+        elif "death" in n:
+            response = "I’m sorry to hear that. Want to talk about it?"
+        elif "20th century girl" in n:
+            response = "Peak movie, please watch it 😄"
+        elif n == "bye":
+            response = "Goodbye! Have a nice day 🌻"
+        else:
+            response = "Hmm… I’m not sure about that yet. Try asking about variables, lists, loops, or say 'challenge'."
 
-        # Save and rerun safely
-        st.session_state.history.append(("You", msg))
-        st.session_state.history.append(("Agamemnon", response))
-        st.session_state.user_input = ""  # Safe, inside event
-        st.experimental_rerun()
+    # Save messages
+    st.session_state.history.append(("You", msg))
+    st.session_state.history.append(("Agamemnon", response))
 
-# Display history
+# Display chat history
 for speaker, text in st.session_state.history:
     if speaker == "You":
         st.markdown(f"**🧑 You:** {text}")
     else:
         st.markdown(f"**🤖 Agamemnon:** {text}")
+
+# Add clear chat button
+if st.button("🧹 Clear Chat"):
+    st.session_state.history.clear()
+    st.experimental_rerun()
