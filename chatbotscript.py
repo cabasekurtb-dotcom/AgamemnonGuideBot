@@ -183,8 +183,9 @@ if user_input:
     st.session_state.history.append(("You", msg))
     st.session_state.history.append(("Agamemnon", response))
 
-    # clear input
-    st.session_state.user_input = ""
+    # clear input safely (works in all versions)
+    st.session_state["user_input"] = ""
+    st.experimental_rerun()
 
 # Display history (most recent last)
 for speaker, text in st.session_state.history:
