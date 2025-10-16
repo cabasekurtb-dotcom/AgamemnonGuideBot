@@ -176,16 +176,17 @@ if user_input:
         else:
             response = "Hmm… I’m not sure about that yet. Try asking about variables, lists, loops, or say 'challenge'."
 
-    # 🧠 Always save chat + rerun (moved outside)
-    st.session_state.history.append(("You", msg))
-    st.session_state.history.append(("Agamemnon", response))
+        # Save chat
+        st.session_state.history.append(("You", msg))
+        st.session_state.history.append(("Agamemnon", response))
 
-    st.session_state["user_input"] = ""
-    st.experimental_rerun()
+        # clear input safely (for Streamlit 1.38+)
+        st.session_state["user_input"] = ""
+        st.experimental_rerun()
 
-# 🗨️ Display chat history
-for speaker, text in st.session_state.history:
-    if speaker == "You":
-        st.markdown(f"**🧑 You:** {text}")
-    else:
-        st.markdown(f"**🤖 Agamemnon:** {text}")
+# Display history (most recent last)
+    for speaker, text in st.session_state.history:
+        if speaker == "You":
+            st.markdown(f"**🧑 You:** {text}")
+        else:
+            st.markdown(f"**🤖 Agamemnon:** {text}")
