@@ -43,6 +43,20 @@ challenges = [
 ]
 
 casual_responses = {
+    "Casey" : ["Ikaw na, Casey?"],
+    "Nino" : ["Sig panghilabot dira dong"],
+    "20th Century Girl" : ["Best movie oat, 10/10 must watch."],
+    "Bai" : ["Saman dong/dae"],
+    "I miss her" : ["Di na lage mo magbalik Corbin"],
+    "unsa paman" : ["Wa nako kaibaw dong."],
+    "At sa bawat minuto" : ["Ako'y di natuto"],
+    "Ipilit mang iba" : ["Ako'y naghihintay sa'yo"],
+    "10-FJK" : ["THE GOATTT", "10-FJK>Others"],
+    "Izak" : ["Ayaw ana Izak, bawal!"],
+    "Loberanis" : ["Hi ms.! Ako imong 43rd student ms.", "Gimingaw kog f2f ms...."],
+    "Abadenas" : ["Hi sir, pila akong grado sir? -Cabase"],
+    "Sir D" : ["Hi sir plus points pls -Cabs"]
+    "Creator" : ["ANG PINAKAGWAPO SA ROOM, SI KURT CABASE!!"],
     "greeting": ["Hey! What's up?", "Hello! How can I help you with Python today?", "Yo! Ready to code?"],
     "how_are_you": ["I'm a bot, but I'm running smoothly 😊", "All systems go! Ready to help."],
     "thanks": ["You're welcome!", "No problem — happy to help!", "Anytime!"],
