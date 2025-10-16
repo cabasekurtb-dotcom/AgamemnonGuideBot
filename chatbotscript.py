@@ -150,13 +150,12 @@ if user_input:
         if faq_answer:
             response = faq_answer
 
-    # 4) explicit ask for facts or "who made python" etc (synonyms)
+    # 4) explicit ask for facts or "who made python" etc
     if response is None and any(k in normalize(msg) for k in ["who made python", "who created python", "creator of python", "who created it"]):
         response = faq.get("who created python")
 
-    # 5) personality / previous chatbot prompts (Agamemnon style)
+    # 5) personality / old prompts
     if response is None:
-        # some personality keywords and responses
         n = normalize(msg)
         if "casey" in n:
             response = "Casey sounds important to you."
@@ -174,22 +173,19 @@ if user_input:
             response = "Peak movie, please watch it 😄"
         elif n == "bye":
             response = "Goodbye! Have a nice day 🌻"
-
-    # 6) fallback
-    if response is None:
-        response = "Hmm… I’m not sure about that yet. Try asking about variables, lists, loops, or say 'challenge'."
-
-        # Save chat
-        st.session_state.history.append(("You", msg))
-        st.session_state.history.append(("Agamemnon", response))
-
-        # clear input safely (for Streamlit 1.38+)
-        st.session_state["user_input"] = ""
-        st.experimental_rerun()
-
-    # Display history (most recent last)
-    for speaker, text in st.session_state.history:
-        if speaker == "You":
-            st.markdown(f"**🧑 You:** {text}")
         else:
-            st.markdown(f"**🤖 Agamemnon:** {text}")
+            response = "Hmm… I’m not sure about that yet. Try asking about variables, lists, loops, or say 'challenge'."
+
+    # 🧠 Always save chat + rerun (moved outside)
+    st.session_state.history.append(("You", msg))
+    st.session_state.history.append(("Agamemnon", response))
+
+    st.session_state["user_input"] = ""
+    st.experimental_rerun()
+
+# 🗨️ Display chat history
+for speaker, text in st.session_state.history:
+    if speaker == "You":
+        st.markdown(f"**🧑 You:** {text}")
+    else:
+        st.markdown(f"**🤖 Agamemnon:** {text}")
