@@ -55,7 +55,7 @@ casual_responses = {
     "Izak" : ["Ayaw ana Izak, bawal!"],
     "Loberanis" : ["Hi ms.! Ako imong 43rd student ms.", "Gimingaw kog f2f ms...."],
     "Abadenas" : ["Hi sir, pila akong grado sir? -Cabase"],
-    "Sir D" : ["Hi sir plus points pls -Cabs"]
+    "Sir D" : ["Hi sir plus points pls -Cabs"],
     "Creator" : ["ANG PINAKAGWAPO SA ROOM, SI KURT CABASE!!"],
     "greeting": ["Hey! What's up?", "Hello! How can I help you with Python today?", "Yo! Ready to code?"],
     "how_are_you": ["I'm a bot, but I'm running smoothly 😊", "All systems go! Ready to help."],
