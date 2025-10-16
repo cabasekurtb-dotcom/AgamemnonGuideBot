@@ -43,20 +43,20 @@ challenges = [
 ]
 
 casual_responses = {
-    "Casey" : ["Ikaw na, Casey?"],
-    "Nino" : ["Sig panghilabot dira dong"],
-    "20th Century Girl" : ["Best movie oat, 10/10 must watch."],
-    "Bai" : ["Saman dong/dae"],
-    "I miss her" : ["Di na lage mo magbalik Corbin"],
+    "casey" : ["Ikaw na, Casey?"],
+    "nino" : ["Sig panghilabot dira dong"],
+    "20th_century_girl" : ["Best movie oat, 10/10 must watch."],
+    "bai" : ["Saman dong/dae"],
+    "i miss her" : ["Di na lage mo magbalik Corbin"],
     "unsa paman" : ["Wa nako kaibaw dong."],
-    "At sa bawat minuto" : ["Ako'y di natuto"],
-    "Ipilit mang iba" : ["Ako'y naghihintay sa'yo"],
-    "10-FJK" : ["THE GOATTT", "10-FJK>Others"],
-    "Izak" : ["Ayaw ana Izak, bawal!"],
-    "Loberanis" : ["Hi ms.! Ako imong 43rd student ms.", "Gimingaw kog f2f ms...."],
-    "Abadenas" : ["Hi sir, pila akong grado sir? -Cabase"],
-    "Sir D" : ["Hi sir plus points pls -Cabs"],
-    "Creator" : ["ANG PINAKAGWAPO SA ROOM, SI KURT CABASE!!"],
+    "at sa bawat minuto" : ["Ako'y di natuto"],
+    "ipilit mang iba" : ["Ako'y naghihintay sa'yo"],
+    "10-fjk" : ["THE GOATTT", "10-FJK>Others"],
+    "izak" : ["Ayaw ana Izak, bawal!"],
+    "loberanis" : ["Hi ms.! Ako imong 43rd student ms.", "Gimingaw kog f2f ms...."],
+    "abadenas" : ["Hi sir, pila akong grado sir? -Cabase"],
+    "sir d" : ["Hi sir plus points pls -Cabs"],
+    "creator" : ["ANG PINAKAGWAPO SA ROOM, SI KURT CABASE!!"],
     "greeting": ["Hey! What's up?", "Hello! How can I help you with Python today?", "Yo! Ready to code?"],
     "how_are_you": ["I'm a bot, but I'm running smoothly 😊", "All systems go! Ready to help."],
     "thanks": ["You're welcome!", "No problem — happy to help!", "Anytime!"],
@@ -139,6 +139,13 @@ if submitted and user_input.strip():
     # 4) explicit creator ask
     if response is None and any(k in normalize(msg) for k in ["who made python", "who created python", "creator of python", "who created it"]):
         response = faq.get("who created python")
+
+    # 4.5) Check for direct matches in casual_responses
+    if response is None:
+        for key, value in casual_responses.items():
+            if key.lower() in normalize(msg):
+                response = random.choice(value)
+                break
 
     # 5) personality prompts
     if response is None:
